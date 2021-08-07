@@ -1,0 +1,131 @@
+--Person.Address lists the addresses of employees
+
+--Return all Person.Address data
+SELECT *
+FROM Person.Address;
+
+--Return only City and PostalCode
+SELECT City, PostalCode
+FROM Person.Address;
+
+--Return distinct values for City
+SELECT DISTINCT City
+FROM Person.Address;
+
+--Return five most frequent entries in City
+SELECT TOP 5 City 
+FROM Person.Address;
+
+--Return City and PostalCode, ordered first by City, then within City by PostalCode
+SELECT City, PostalCode
+FROM Person.Address
+ORDER BY City, PostalCode;
+
+--Return number of times each value for City occurs in a column called CityFrequency, with cities listed in alphabetical order
+SELECT City, COUNT(*) AS CityFrequency
+FROM Person.Address
+GROUP BY City
+ORDER BY City ASC;
+
+--Return AddressID and AddressLine2 for each instance of a null value in AddressLine2
+SELECT AddressID, AddressLine2
+FROM Person.Address
+WHERE AddressLine2 IS NULL;
+
+--Return cities with at least 100 occurrences, listed alphabetically
+SELECT City, COUNT(*) AS CityFrequency 
+FROM Person.Address
+GROUP BY City
+HAVING COUNT(*) >= 100 
+ORDER BY City ASC;
+
+--Return City and PostalCode for all entries of York in City
+SELECT City, PostalCode
+FROM Person.Address
+WHERE City = 'York';
+
+--Return AddressID, AddressLine1, and City for all entries of Paris or Stoke-on-Trent in City
+SELECT AddressID, AddressLine1, City
+FROM Person.Address
+WHERE City IN ('Paris','Stoke-on-Trent');
+
+
+--HumanResources.Employee lists information about the company's employees
+
+--Create a calculated column called HoursAway from two existing columns
+SELECT BusinessEntityID, LoginID, JobTitle,
+VacationHours+SickLeaveHours AS HoursAway 
+FROM HumanResources.Employee
+
+
+--Purchasing.PurchaseOrderDetail lists information about purchases made by the company
+
+--Return ProductID and UnitPrice for each instance in which UnitPrice is greater than 10
+SELECT ProductID, UnitPrice
+FROM Purchasing.PurchaseOrderDetail
+WHERE UnitPrice > 10;
+
+--Return ProductID and UnitPrice for each instance in which UnitPrice is between 5 and 10
+SELECT ProductID, UnitPrice
+FROM Purchasing.PurchaseOrderDetail
+WHERE UnitPrice BETWEEN 5 AND 10;
+
+
+--Sales.Customer lists information about the company's customers
+
+--Return CustomerID and PersonID for all entries in which there is a null value for PersonID
+SELECT CustomerID, PersonID
+FROM Sales.Customer
+WHERE PersonID IS NULL;
+
+
+--Production.TransactionHistory lists information about transactions made in the production process
+
+--Return TransactionID, ProductID, Quantity, Actual Cost for rows where Quantity is greater than or equal to 10 and ActualCost is greater than 100
+SELECT TransactionID, ProductID, Quantity, ActualCost
+FROM Production.TransactionHistory
+WHERE Quantity >= 10 AND ActualCost > 100;
+
+--Return TransactionID, ProductID, Quantity, Actual Cost for rows where Quantity is greater than or equal to 300 and ActualCost is greater than 3000
+SELECT TransactionID, ProductID, Quantity, ActualCost
+FROM Production.TransactionHistory
+WHERE Quantity >= 300 OR ActualCost > 3000;
+
+--Return the minimum actual cost, the maximum actual cost, and the average actual cost
+SELECT MIN(ActualCost) AS MinActualCost,
+   MAX(ActualCost) AS MaxActualCost,
+   AVG(ActualCost) AS AverageActualCost
+FROM Production.TransactionHistory;
+
+--Return the average actual cost for the product with ProductID 708
+SELECT AVG(ActualCost) AS AverageActualCost
+FROM Production.TransactionHistory
+WHERE ProductID = 708;
+
+
+--Production.Product lists information about the products made by the company
+
+--Return rows where Name contains the word 'mountain'
+SELECT ProductID, Name
+FROM Production.Product
+WHERE Name LIKE '%mountain%';
+
+--Return the Mountain-100 Silver models
+SELECT ProductID, Name
+FROM Production.Product
+WHERE Name LIKE 'Mountain-100 Silver, __'; 
+
+--Return the name of products along with the rating and comments for each (which are stored in different tables), where the ProductID is used to identify each product
+SELECT Name, Rating, Comments
+FROM Production.Product
+INNER JOIN Production.ProductReview ON Production.Product.ProductID = Production.ProductReview.ProductID;
+
+--Return same as above, but return all products which have values for Rating and Comments
+SELECT Name, Rating, Comments
+FROM Production.Product
+RIGHT OUTER JOIN Production.ProductReview ON Production.Product.ProductID = Production.ProductReview.ProductID;
+
+--Return all products, even those with no value (null value) for Rating or Comments
+SELECT Name, Rating, Comments
+FROM Production.Product
+LEFT OUTER JOIN Production.ProductReview ON Production.Product.ProductID = Production.ProductReview.ProductID;
