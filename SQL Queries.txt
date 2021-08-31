@@ -49,6 +49,32 @@ SELECT AddressID, AddressLine1, City
 FROM Person.Address
 WHERE City IN ('Paris','Stoke-on-Trent');
 
+--Create a cursor of City and PostalCode for rows in which the city is Paris
+DECLARE PersonCursor CURSOR
+FOR
+SELECT City, PostalCode FROM Person.Address
+WHERE City = 'Paris';
+
+--Declare variables, retrieve information from the cursor, and fill in the variables
+DECLARE @City CHAR(10), 
+	@PostalCode CHAR(10)
+OPEN PersonCursor
+FETCH NEXT FROM PersonCursor
+INTO @City, @PostalCode
+   
+--Go through all rows and print the City and PostalCode, then stop
+WHILE @@FETCH_STATUS = 0
+BEGIN 
+PRINT @City + @PostalCode
+FETCH NEXT FROM PersonCursor
+	INTO @City, @PostalCode
+END
+
+--Close and deallocate the cursor
+CLOSE PersonCursor;
+DEALLOCATE CURSOR PersonCursor;
+
+
 
 --HumanResources.Employee lists information about the company's employees
 
@@ -56,6 +82,7 @@ WHERE City IN ('Paris','Stoke-on-Trent');
 SELECT BusinessEntityID, LoginID, JobTitle,
 VacationHours+SickLeaveHours AS HoursAway 
 FROM HumanResources.Employee
+
 
 
 --Purchasing.PurchaseOrderDetail lists information about purchases made by the company
@@ -71,12 +98,14 @@ FROM Purchasing.PurchaseOrderDetail
 WHERE UnitPrice BETWEEN 5 AND 10;
 
 
+
 --Sales.Customer lists information about the company's customers
 
 --Return CustomerID and PersonID for all entries in which there is a null value for PersonID
 SELECT CustomerID, PersonID
 FROM Sales.Customer
 WHERE PersonID IS NULL;
+
 
 
 --Production.TransactionHistory lists information about transactions made in the production process
@@ -101,6 +130,7 @@ FROM Production.TransactionHistory;
 SELECT AVG(ActualCost) AS AverageActualCost
 FROM Production.TransactionHistory
 WHERE ProductID = 708;
+
 
 
 --Production.Product lists information about the products made by the company
